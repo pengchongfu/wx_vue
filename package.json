@@ -1,0 +1,12 @@
+{
+  "name": "wx_vue",
+  "version": "1.0.0",
+  "description": "wx developed with vue.js",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  }
+}

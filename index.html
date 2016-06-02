@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>wx_vue</title>
+    <link href='./css/weui.min.css' rel='stylesheet' >
+    <style>
+      html,body {
+        height: 100%;
+      }
+      .imgurl {
+        height: 100%;
+        display: flex;
+        justify-content: center; 
+        align-items: center;
+      }
+      .imgurl img {
+        width: 200px;
+      }
+      .navbar .weui_cell {
+        background: #2e3238;
+        color:white;
+      }
+      .cover{
+        display: block;
+        width: 42px;
+        height: 42px;
+        margin-right: 15px;
+      }
+      .messageDiv.fromme {
+          display: flex;
+          flex-direction: row-reverse;
+          min-height: 60px;
+      }
+      .fromme img {
+          margin-left: 20px;
+          width: 60px;
+          height: 60px;
+      }
+      .fromme .square {
+          border-radius: 5px;
+          width: 200px;
+          word-break: break-all;
+          background: #b2e281;
+          min-height: 60px;
+          position: relative;
+      }
+      .fromme .corner {
+          position: absolute;
+          left:200px;
+          top:20px;
+          border-width: 10px;
+          border-style: solid;
+          border-color: transparent transparent transparent #b2e281;
+      }
+      .messageDiv.fromothers {
+          display: flex;
+          min-height: 60px;
+      }
+      .fromothers img {
+          margin-right: 20px;
+          width: 60px;
+          height: 60px;
+      }
+      .fromothers .square {
+          border-radius: 5px;
+          width: 200px;
+          word-break: break-all;
+          background: #b2e281;
+          min-height: 60px;
+          position: relative;
+      }
+      .fromothers .corner {
+          position: absolute;
+          left:-20px;
+          top:20px;
+          border-width: 10px;
+          border-style: solid;
+          border-color: transparent #b2e281 transparent transparent;
+      }
+      ::-webkit-scrollbar-track-piece{background-color:#fff;}
+      ::-webkit-scrollbar{width:3px;}
+      ::-webkit-scrollbar-thumb{background:#999;} 
+      
+      .weui_cells.weui_cells_access {
+          margin-top: 45px;
+      }
+      #back:hover {
+          cursor: pointer;
+      }
+      #search_show {
+          margin-top: 0px;
+      }
+
+    </style>
+  </head>
+  <body>
+      <router-view></router-view>
+
+<template id='navbar'>
+  <div class="navbar">
+  <div class="weui_cell">
+    <div class="weui_cell_bd weui_cell_primary">
+        <p>微信</p>
+    </div>
+    <div class="weui_cell_ft">
+        <i class="weui_icon_search" v-link="{path:'/page2/search'}"></i>
+    </div>
+  </div>
+  </div>
+</template>
+   
+<template id='tabbar'>
+<div class="weui_tab">
+    <div class="weui_tab_bd">
+      <router-view></router-view>
+    </div>
+    <div class="weui_tabbar">
+        <a href="javascript:;" class="weui_tabbar_item" v-link="{path:'/page1/weixin'}">
+            <div class="weui_tabbar_icon">
+                <img src="./images/icon_nav_button.png" alt="">
+            </div>
+            <p class="weui_tabbar_label">微信</p>
+        </a>
+        <a href="javascript:;" class="weui_tabbar_item" v-link="{path:'/page1/tongxunlu'}">
+            <div class="weui_tabbar_icon">
+                <img src="./images/icon_nav_msg.png" alt="">
+            </div>
+            <p class="weui_tabbar_label">通讯录</p>
+        </a>
+    </div>
+</div>
+</template>
+
+<template id='weixin'>
+    <div class="weui_cells weui_cells_access">
+    <div class="weui_cell" v-for="item in lastContact" v-link="{path:'/page2/message/'+item.UserName}">
+        <div class="weui_cell_hd">
+        <img v-bind:src="item.HeadImgUrl" alt="" class="cover">
+        </div>
+        <div class="weui_cell_bd weui_cell_primary">
+        <h3 class="title">{{ item.Name }}</h3>
+        <p class="summary">{{ item.Message[item.Message.length-1].content.slice(0,25) }}</p>
+        </div>
+    </div>
+    </div>
+</template>
+
+<template id='tongxunlu'>
+    <div class="weui_cells weui_cells_access">
+    <div class="weui_cell" v-for="item in contact" v-link="{path:'/page2/message/'+item.UserName}">
+        <div class="weui_cell_hd">
+        <img v-bind:src="item.HeadImgUrl" alt="" class="cover">
+        </div>
+        <div class="weui_cell_bd weui_cell_primary">
+        <h3 class="title">{{ item.Name }}</h3>
+        </div>
+    </div>
+    </div>
+</template>
+
+<template id="search">
+<div class="weui_search_bar" id="search_bar" v-bind:class="{'weui_search_focusing':focused}">
+    <span id="back" style="margin-right:20px;" v-link="{path:'/page1/weixin'}">←</span>
+    <form class="weui_search_outer">
+        <div class="weui_search_inner">
+            <i class="weui_icon_search"></i>
+            <input type="search" class="weui_search_input" id="search_input" placeholder="搜索" required v-model='input' v-on:focus="onfocus" v-on:blur="onblur"/>
+            <a href="javascript:" class="weui_icon_clear" id="search_clear" v-on:click='clear'></a>
+        </div>
+        <label for="search_input" class="weui_search_text" id="search_text" v-if="!input">
+            <i class="weui_icon_search"></i>
+            <span>搜索</span>
+        </label>
+    </form>
+</div>
+
+<div class="weui_cells weui_cells_access search_show" id="search_show" v-if='input'>
+    <div class="weui_cell" v-for="item in output" v-link="{path:'/page2/message/'+item.UserName}">
+        <div class="weui_cell_hd">
+        <img v-bind:src="item.HeadImgUrl" alt="" class="cover">
+        </div>
+        <div class="weui_cell_bd weui_cell_primary">
+        <h3 class="title">{{ item.Name }}</h3>
+        </div>
+    </div>
+</div>
+</template>
+
+<template id="message">
+  <div style="position:fixed;width:100%;z-index:1">
+  <div class="navbar">
+    <div class="weui_cell">
+        <span id="back" style="margin-right:20px;" v-link="{path:'/page1/weixin'}">←</span>
+        <div class="weui_cell_bd weui_cell_primary">
+            <p>{{ currentContact.Name }}</p>
+        </div>
+    </div>
+  </div>
+  </div>
+  
+  <div style="height:100%;overflow:scroll;">
+    <div style="height:45px"></div>
+    <div v-for="item in currentContact.Message">
+        <br />
+        <div class="messageDiv fromothers" v-if="item.from">
+        <img v-bind:src="currentContact.HeadImgUrl">
+        <div class="square">{{ item.content }}<span class="corner"></span></div>
+        </div>
+        <div class="messageDiv fromme" v-else>
+        <img v-bind:src="url">
+        <div class="square">{{ item.content }}<span class="corner"></span></div>
+        </div>
+    </div>
+    <div style="height:136px"></div>
+  </div>
+    
+    <div style="position:fixed;bottom:0px;width:100%;z-index:1">
+    <div class="weui_cells weui_cells_form">
+    <div class="weui_cell">
+        <div class="weui_cell_bd weui_cell_primary">
+            <textarea class="weui_textarea" id="textarea" placeholder="请在此输入消息" rows="3" v-model="message" v-on:keyup.enter="submit"></textarea>
+        </div>
+    </div>
+    </div>
+    </div>
+</template>
+
+<template id="page0">
+    <div class="imgurl">
+    <img v-bind:src="Data.url">
+    </div>
+</template>
+
+<template id="page1">
+    <div style="position:fixed;width:100%;z-index:1">
+    <navbar></navbar>
+    </div>
+    <tabbar></tabbar>
+</template>
+
+<template id="page2">
+    <router-view></router-view>
+</template>
+    
+    <script src='./menu.js'></script>
+    <script src='./js/background.js'></script>
+    <script src='./js/vue.js'></script>
+    <script src='./js/vue-router.js'></script>
+    <script src='./js/view.js'></script>
+  </body>
+</html>
