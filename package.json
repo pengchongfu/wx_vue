@@ -4,7 +4,9 @@
   "description": "wx developed with vue.js",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "build": "electron-packager . wx_vue --ignore=node_modules/electron-* --ignore=node_modules/.bin --ignore=.git --platform=win32 --arch=x64 --version=1.2.0",
+    "package": "asar pack wx_vue-win32-x64/resources/app wx_vue-win32-x64/resources/app.asar && rm -rf wx_vue-win32-x64/resources/app"
   },
   "devDependencies": {
     "electron-prebuilt": "^1.2.0"
