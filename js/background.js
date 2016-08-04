@@ -216,7 +216,7 @@ function receiveMsg(fromusername,tousername,content,wxSession){
     return;
   }
   for(var i=0,l=wxSession.MemberList.length;i<l;i++){
-    if(fromusername===wxSession.MemberList[i]){
+    if(fromusername===wxSession.MemberList[i].UserName){
       saveMessage(Data,fromusername,content,1);
       return;
     }
